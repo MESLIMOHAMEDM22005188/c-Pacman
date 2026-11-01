@@ -12,18 +12,14 @@ public:
     Maze();
     void draw(sf::RenderWindow& window) const;
     bool isWall(int x, int y) const;
-    bool hasPellet(int x, int y) const;
-    bool hasPowerPellet(int x, int y) const;
     bool eatPellet(int x, int y);
     bool eatPowerPellet(int x, int y);
     void reset();
     int remainingPellets() const;
     sf::Vector2i playerSpawn() const;
     sf::Vector2i ghostSpawn(int index) const;
-    const std::vector<std::string>& layout() const { return grid_; }
 
 private:
-    std::vector<std::string> grid_;
     std::vector<std::string> original_;
     std::vector<std::vector<bool>> pellets_;
     std::vector<std::vector<bool>> powerPellets_;
