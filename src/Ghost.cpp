@@ -50,9 +50,8 @@ Direction Ghost::chooseDirection(const Maze& maze, sf::Vector2i playerTile, Dire
         target = {1, 19};
     }
 
-    if (mode_ == Mode::Frightened) {
+    if (mode_ == Mode::Frightened)
         return options[static_cast<std::size_t>((current.x + current.y + personality_) % options.size())];
-    }
 
     Direction best = options.front();
     float bestDistance = std::numeric_limits<float>::max();
@@ -76,8 +75,8 @@ void Ghost::update(float dt, const Maze& maze, sf::Vector2i playerTile, Directio
         moveTimer_ -= interval;
         const auto t = tile();
         const auto d = directionVector(direction_);
-        const bool atCenter = true;
-        if (atCenter || maze.isWall(t.x + d.x, t.y + d.y))
+        if (maze.isWall(t.x + d.x, t.y + d.y) ||
+            ((static_cast<int>(animation_ * 10.f) % 3) == 0))
             direction_ = chooseDirection(maze, playerTile, playerDirection);
         if (direction_ == Direction::None) continue;
         const auto v = directionVector(direction_);
@@ -90,8 +89,7 @@ void Ghost::update(float dt, const Maze& maze, sf::Vector2i playerTile, Directio
 }
 
 void Ghost::draw(sf::RenderWindow& window) const {
-    const bool frightened = mode_ == Mode::Frightened;
-    const sf::Color bodyColor = frightened ? sf::Color(35, 60, 220) :
+    const sf::Color bodyColor = mode_ == Mode::Frightened ? sf::Color(35, 60, 220) :
                                 (mode_ == Mode::Returning ? sf::Color(170, 170, 190) : color_);
     sf::CircleShape head(9.5f, 24);
     head.setPosition(position_.x - 9.5f, position_.y - 9.5f);
