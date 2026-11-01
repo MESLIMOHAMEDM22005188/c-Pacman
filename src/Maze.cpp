@@ -1,5 +1,4 @@
 #include "Maze.hpp"
-#include <algorithm>
 
 Maze::Maze() {
     original_ = {
@@ -25,7 +24,6 @@ Maze::Maze() {
         "#.........................#",
         "#########################"
     };
-    // Keep all rows exactly the same width.
     for (auto& row : original_) {
         if (row.size() < Columns) row.append(Columns - row.size(), '#');
         if (row.size() > Columns) row.resize(Columns);
@@ -34,39 +32,29 @@ Maze::Maze() {
 }
 
 void Maze::reset() {
-    grid_ = original_;
     pellets_.assign(Rows, std::vector<bool>(Columns, false));
     powerPellets_.assign(Rows, std::vector<bool>(Columns, false));
     for (int y = 0; y < Rows; ++y) {
         for (int x = 0; x < Columns; ++x) {
-            if (grid_[y][x] == '.' || grid_[y][x] == 'o') {
-                pellets_[y][x] = grid_[y][x] == '.';
-                powerPellets_[y][x] = grid_[y][x] == 'o';
-                grid_[y][x] = ' ';
-            }
+            pellets_[y][x] = original_[y][x] == '.';
+            powerPellets_[y][x] = original_[y][x] == 'o';
         }
     }
 }
 
 bool Maze::isWall(int x, int y) const {
     if (y < 0 || y >= Rows) return true;
-    if (x < 0 || x >= Columns) return false; // horizontal tunnel
+    if (x < 0 || x >= Columns) return false;
     return original_[y][x] == '#';
 }
 
-bool Maze::hasPellet(int x, int y) const {
-    return y >= 0 && y < Rows && x >= 0 && x < Columns && pellets_[y][x];
-}
-bool Maze::hasPowerPellet(int x, int y) const {
-    return y >= 0 && y < Rows && x >= 0 && x < Columns && powerPellets_[y][x];
-}
 bool Maze::eatPellet(int x, int y) {
-    if (!hasPellet(x, y)) return false;
+    if (y < 0 || y >= Rows || x < 0 || x >= Columns || !pellets_[y][x]) return false;
     pellets_[y][x] = false;
     return true;
 }
 bool Maze::eatPowerPellet(int x, int y) {
-    if (!hasPowerPellet(x, y)) return false;
+    if (y < 0 || y >= Rows || x < 0 || x >= Columns || !powerPellets_[y][x]) return false;
     powerPellets_[y][x] = false;
     return true;
 }
@@ -74,7 +62,7 @@ int Maze::remainingPellets() const {
     int total = 0;
     for (int y = 0; y < Rows; ++y)
         for (int x = 0; x < Columns; ++x)
-            total += pellets_[y][x] || powerPellets_[y][x] ? 1 : 0;
+            total += (pellets_[y][x] || powerPellets_[y][x]) ? 1 : 0;
     return total;
 }
 sf::Vector2i Maze::playerSpawn() const { return {12, 15}; }
